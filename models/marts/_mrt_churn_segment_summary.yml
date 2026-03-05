@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: mrt_churn_segment_summary
+    description: "Aggregated churn metrics grouped by risk tier and state. Pre-computed for fast Streamlit dashboard queries."
+    columns:
+      - name: churn_risk_tier
+        description: "Churn risk bucket: Low, Medium, High, or Critical."
+      - name: state
+        description: "Customer state abbreviation."
+      - name: customer_count
+        description: "Number of customers in this risk tier + state combination."
+      - name: actual_churned_count
+        description: "Number of customers who actually churned (churned=1) in this segment."
+      - name: avg_churn_probability
+        description: "Average model-predicted churn probability for this segment."
+      - name: avg_lifetime_revenue
+        description: "Average lifetime revenue per customer in BRL for this segment."
+      - name: avg_total_orders
+        description: "Average order count per customer for this segment."
+      - name: avg_review_score
+        description: "Average review score for customers in this segment."
+      - name: avg_recency_days
+        description: "Average days since last order for customers in this segment."
+      - name: total_revenue_at_risk
+        description: "Sum of lifetime revenue for all customers in this segment. Represents total BRL at risk of churn."

@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: int_customer_order_summary
+    description: "Per-customer aggregation of their complete delivered order history. One row per customer_unique_id."
+    columns:
+      - name: customer_unique_id
+        description: "True unique customer identifier across all orders."
+        tests:
+          - unique
+          - not_null
+      - name: city
+        description: "Customer city (first observed)."
+      - name: state
+        description: "Customer state abbreviation."
+      - name: total_orders
+        description: "Total number of delivered orders placed by this customer."
+        tests:
+          - not_null
+      - name: first_order_at
+        description: "Timestamp of the customer's earliest order."
+      - name: last_order_at
+        description: "Timestamp of the customer's most recent order."
+      - name: lifetime_revenue
+        description: "Total payment value across all orders in BRL."
+      - name: avg_order_value
+        description: "Average payment value per order in BRL."
+      - name: total_items_purchased
+        description: "Total number of line items purchased across all orders."
+      - name: avg_delivery_days
+        description: "Average number of days from purchase to delivery across all orders."
+      - name: avg_delivery_delta_days
+        description: "Average delivery delta (actual vs estimated). Negative = typically late."
+      - name: avg_review_score
+        description: "Average review score across all orders (1-5 scale)."
+      - name: worst_review_score
+        description: "Lowest review score the customer ever gave."
+      - name: avg_installments
+        description: "Average maximum installment count across orders."
+      - name: late_delivery_count
+        description: "Number of orders that were delivered after the estimated date."

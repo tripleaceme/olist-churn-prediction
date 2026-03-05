@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: stg_olist__customers
+    description: "Cleaned customer profiles with unique ID and location. One row per order-level customer ID."
+    columns:
+      - name: customer_id
+        description: "Order-level customer identifier. Changes per order — not a true unique customer key."
+        tests:
+          - unique
+          - not_null
+      - name: customer_unique_id
+        description: "True unique customer identifier that persists across orders. Use this as the customer grain."
+        tests:
+          - not_null
+      - name: zip_code
+        description: "Customer zip code prefix (first 5 digits of Brazilian CEP)."
+      - name: city
+        description: "Customer city name."
+      - name: state
+        description: "Customer state abbreviation (e.g., SP, RJ, MG)."

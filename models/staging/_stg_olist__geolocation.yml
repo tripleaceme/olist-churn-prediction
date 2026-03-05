@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: stg_olist__geolocation
+    description: "Deduplicated zip code to coordinates mapping. Averaged lat/lng per zip code from the raw multi-row source."
+    columns:
+      - name: zip_code
+        description: "Brazilian zip code prefix (first 5 digits of CEP). Unique after deduplication."
+        tests:
+          - unique
+          - not_null
+      - name: latitude
+        description: "Average latitude for this zip code."
+      - name: longitude
+        description: "Average longitude for this zip code."
+      - name: city
+        description: "City name associated with this zip code."
+      - name: state
+        description: "State abbreviation associated with this zip code."

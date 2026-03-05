@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: stg_olist__orders
+    description: "Cleaned orders with standardized timestamps. One row per order."
+    columns:
+      - name: order_id
+        description: "Unique order identifier."
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: "Foreign key to stg_olist__customers. Order-level customer identifier."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_olist__customers')
+              field: customer_id
+      - name: order_status
+        description: "Current order status. One of: delivered, shipped, canceled, unavailable, invoiced, processing, created, approved."
+        tests:
+          - accepted_values:
+              values: ['delivered', 'shipped', 'canceled', 'unavailable',
+                       'invoiced', 'processing', 'created', 'approved']
+      - name: purchased_at
+        description: "Timestamp when the customer placed the order."
+      - name: approved_at
+        description: "Timestamp when the payment was approved."
+      - name: shipped_at
+        description: "Timestamp when the order was handed to the logistics carrier."
+      - name: delivered_at
+        description: "Timestamp when the order was delivered to the customer."
+      - name: estimated_delivery_at
+        description: "Estimated delivery date shown to the customer at purchase time."

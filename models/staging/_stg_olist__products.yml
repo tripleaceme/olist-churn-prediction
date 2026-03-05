@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: stg_olist__products
+    description: "Product catalog with English category names and physical dimensions. One row per product."
+    columns:
+      - name: product_id
+        description: "Unique product identifier."
+        tests:
+          - unique
+          - not_null
+      - name: product_category
+        description: "Product category translated to English (e.g., 'health_beauty', 'computers_accessories'). Falls back to Portuguese if no translation exists."
+      - name: product_name_length
+        description: "Character count of the product name."
+      - name: product_description_length
+        description: "Character count of the product description."
+      - name: product_photos_count
+        description: "Number of product photos in the listing."
+      - name: product_weight_grams
+        description: "Product weight in grams."
+      - name: product_length_cm
+        description: "Product length in centimeters."
+      - name: product_height_cm
+        description: "Product height in centimeters."
+      - name: product_width_cm
+        description: "Product width in centimeters."

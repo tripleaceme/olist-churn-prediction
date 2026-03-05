@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: stg_olist__order_payments
+    description: "Payment records per order. An order may have multiple payment methods (e.g., credit card + voucher)."
+    columns:
+      - name: order_id
+        description: "Foreign key to stg_olist__orders."
+        tests:
+          - not_null
+      - name: payment_sequential
+        description: "Sequential payment number within the order (1 = primary payment method)."
+      - name: payment_type
+        description: "Payment method used. One of: credit_card, boleto, voucher, debit_card, not_defined."
+        tests:
+          - accepted_values:
+              values: ['credit_card', 'boleto', 'voucher', 'debit_card', 'not_defined']
+      - name: payment_installments
+        description: "Number of installments chosen by the customer (common in Brazilian e-commerce)."
+      - name: payment_value
+        description: "Transaction value for this payment record in BRL."
+        tests:
+          - not_null

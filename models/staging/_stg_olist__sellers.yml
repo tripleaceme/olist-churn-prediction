@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: stg_olist__sellers
+    description: "Seller profiles with location. One row per seller."
+    columns:
+      - name: seller_id
+        description: "Unique seller identifier."
+        tests:
+          - unique
+          - not_null
+      - name: zip_code
+        description: "Seller zip code prefix (first 5 digits of Brazilian CEP)."
+      - name: city
+        description: "Seller city name."
+      - name: state
+        description: "Seller state abbreviation (e.g., SP, RJ, MG)."

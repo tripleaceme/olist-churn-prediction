@@ -1,0 +1,51 @@
+version: 2
+
+models:
+  - name: int_order_enriched
+    description: "Delivered orders joined with aggregated items, payments, and reviews into a single enriched record. One row per delivered order."
+    columns:
+      - name: order_id
+        description: "Unique order identifier."
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: "Order-level customer identifier. Foreign key to stg_olist__customers."
+        tests:
+          - not_null
+      - name: purchased_at
+        description: "Timestamp when the customer placed the order."
+      - name: approved_at
+        description: "Timestamp when the payment was approved."
+      - name: shipped_at
+        description: "Timestamp when the order was handed to the logistics carrier."
+      - name: delivered_at
+        description: "Timestamp when the order was delivered to the customer."
+      - name: estimated_delivery_at
+        description: "Estimated delivery date shown to the customer at purchase time."
+      - name: delivery_days
+        description: "Number of days between purchase and actual delivery."
+      - name: estimated_delivery_days
+        description: "Number of days between purchase and estimated delivery date."
+      - name: delivery_delta_days
+        description: "Difference between actual and estimated delivery in days. Negative = late delivery, positive = early."
+      - name: item_count
+        description: "Total number of line items in this order."
+      - name: unique_products
+        description: "Number of distinct products in this order."
+      - name: unique_sellers
+        description: "Number of distinct sellers fulfilling this order."
+      - name: total_price
+        description: "Sum of all item prices in BRL (excluding freight)."
+      - name: total_freight
+        description: "Sum of all freight charges in BRL."
+      - name: payment_type_count
+        description: "Number of distinct payment methods used for this order."
+      - name: max_installments
+        description: "Maximum number of installments chosen across payment methods."
+      - name: total_payment
+        description: "Total payment value in BRL (price + freight + fees)."
+      - name: avg_review_score
+        description: "Average review score for this order (1-5 scale)."
+      - name: min_review_score
+        description: "Lowest review score given for this order."

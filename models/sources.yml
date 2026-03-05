@@ -1,0 +1,29 @@
+version: 2
+
+sources:
+  - name: olist
+    description: "Olist Brazilian E-Commerce raw data"
+    database: OLIST
+    schema: RAW_DATA
+    tables:
+      - name: customers
+        description: "Customer profiles with unique ID and location"
+        columns:
+          - name: customer_id
+            description: "Order-level customer identifier (changes per order)"
+          - name: customer_unique_id
+            description: "True unique customer identifier across orders"
+      - name: orders
+        description: "Order header with status and lifecycle timestamps"
+      - name: order_items
+        description: "Line items per order with product, seller, price, and freight"
+      - name: order_payments
+        description: "Payment records per order (type, installments, value)"
+      - name: order_reviews
+        description: "Customer reviews with scores and optional comments"
+      - name: products
+        description: "Product catalog with category and physical dimensions"
+      - name: sellers
+        description: "Seller profiles with location"
+      - name: geolocation
+        description: "Zip code to lat/lng mapping (many-to-one per zip)"

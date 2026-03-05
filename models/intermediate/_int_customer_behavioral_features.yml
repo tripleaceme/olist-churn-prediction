@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: int_customer_behavioral_features
+    description: "Product diversity and payment habit features per customer. Captures shopping behavior patterns for ML features."
+    columns:
+      - name: customer_unique_id
+        description: "True unique customer identifier."
+        tests:
+          - unique
+          - not_null
+      - name: unique_categories_purchased
+        description: "Number of distinct product categories the customer has bought from."
+      - name: unique_products_purchased
+        description: "Number of distinct products the customer has bought."
+      - name: unique_payment_methods
+        description: "Number of distinct payment types the customer has used (e.g., credit_card, boleto)."
+      - name: credit_card_usage_ratio
+        description: "Proportion of payment records that used credit card (0.0 to 1.0)."
+      - name: boleto_usage_ratio
+        description: "Proportion of payment records that used boleto (0.0 to 1.0). Boleto is a Brazilian bank slip payment method."

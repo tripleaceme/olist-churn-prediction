@@ -1,0 +1,12 @@
+target/
+dbt_packages/
+logs/
+data/
+.streamlit/secrets.toml
+*.pyc
+__pycache__/
+.DS_Store
+package-lock.yml
+
+# Utility scripts with credentials (already run, not needed in repo)
+fix_column_names.py

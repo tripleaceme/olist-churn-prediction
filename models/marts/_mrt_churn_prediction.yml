@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: mrt_churn_prediction
+    description: "ML-scored churn predictions with probability and risk tiers. Trained using GradientBoosting on mrt_customer_360. Retrained on each dbt run."
+    columns:
+      - name: customer_unique_id
+        description: "True unique customer identifier. Primary key."
+        tests:
+          - unique
+          - not_null
+      - name: state
+        description: "Customer state abbreviation."
+      - name: total_orders
+        description: "Total number of delivered orders."
+      - name: lifetime_revenue
+        description: "Total payment value across all orders in BRL."
+      - name: avg_review_score
+        description: "Average review score across all orders (1-5)."
+      - name: recency_days
+        description: "Days since last order relative to dataset end date."
+      - name: rfm_combined_score
+        description: "Combined RFM score (3-15). Higher = more valuable customer."
+      - name: churn_probability
+        description: "Model-predicted probability of churn (0.0 to 1.0). Output of GradientBoosting predict_proba."
+      - name: churn_prediction
+        description: "Binary prediction. 1 = predicted to churn, 0 = predicted to be retained."
+        tests:
+          - accepted_values:
+              values: [0, 1]
+      - name: churn_risk_tier
+        description: "Risk tier based on churn_probability. Low (0-0.3), Medium (0.3-0.6), High (0.6-0.8), Critical (0.8-1.0)."
+        tests:
+          - accepted_values:
+              values: ['Low', 'Medium', 'High', 'Critical']
+      - name: churned
+        description: "Actual churn label from training data. 1 = single-order (churned), 0 = repeat buyer (retained)."

@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: mrt_seller_performance
+    description: "Seller quality metrics including delivery speed, review scores, and late delivery rates. One row per seller."
+    columns:
+      - name: seller_id
+        description: "Unique seller identifier. Primary key."
+        tests:
+          - unique
+          - not_null
+      - name: seller_city
+        description: "City where the seller is located."
+      - name: seller_state
+        description: "State abbreviation where the seller is located."
+      - name: total_orders_fulfilled
+        description: "Number of distinct delivered orders this seller contributed to."
+      - name: unique_products_sold
+        description: "Number of distinct products this seller has sold."
+      - name: total_revenue
+        description: "Total item revenue in BRL (excluding freight)."
+      - name: avg_item_price
+        description: "Average price per item sold in BRL."
+      - name: avg_freight_value
+        description: "Average freight charge per item in BRL."
+      - name: avg_review_score
+        description: "Average customer review score for orders involving this seller (1-5)."
+      - name: avg_delivery_days
+        description: "Average number of days from purchase to delivery for this seller's orders."
+      - name: late_delivery_rate
+        description: "Proportion of orders delivered after the estimated date (0.0 to 1.0)."

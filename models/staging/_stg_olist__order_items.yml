@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: stg_olist__order_items
+    description: "Order line items with product, seller, price, and freight. One row per item in an order."
+    columns:
+      - name: order_id
+        description: "Foreign key to stg_olist__orders."
+        tests:
+          - not_null
+      - name: order_item_id
+        description: "Sequential item number within the order (1, 2, 3, ...)."
+      - name: product_id
+        description: "Foreign key to stg_olist__products."
+        tests:
+          - not_null
+      - name: seller_id
+        description: "Foreign key to stg_olist__sellers. The seller who fulfilled this item."
+      - name: shipping_limit_at
+        description: "Deadline for the seller to hand the item to the carrier."
+      - name: price
+        description: "Item price in BRL (Brazilian Real)."
+        tests:
+          - not_null
+      - name: freight_value
+        description: "Shipping cost for this item in BRL."
