@@ -1,5 +1,5 @@
-import json
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import plotly.express as px
 from pathlib import Path
@@ -128,156 +128,34 @@ with tab_dashboard:
     st.dataframe(at_risk_df, use_container_width=True, hide_index=True)
 
 # ============================================================
-# TAB 2: DATA DOCUMENTATION
+# TAB 2: DATA DOCUMENTATION (dbt docs site)
 # ============================================================
 with tab_docs:
     st.title("Data Documentation")
     st.caption(
-        "Auto-generated from dbt YAML definitions | Persisted to Snowflake via persist_docs"
+        "Interactive dbt docs with full lineage graph | Generated via `dbt docs generate`"
     )
 
-    # Load dbt manifest and catalog
     target_dir = Path(__file__).parent / "target"
+    index_path = target_dir / "index.html"
     manifest_path = target_dir / "manifest.json"
     catalog_path = target_dir / "catalog.json"
 
-    if not manifest_path.exists() or not catalog_path.exists():
+    if not all(p.exists() for p in [index_path, manifest_path, catalog_path]):
         st.warning(
             "dbt artifacts not found. Run `dbt docs generate` to create them."
         )
         st.stop()
 
-    manifest = json.loads(manifest_path.read_text())
-    catalog = json.loads(catalog_path.read_text())
+    # Build self-contained dbt docs HTML by injecting manifest + catalog
+    html = index_path.read_text()
+    manifest_json = manifest_path.read_text()
+    catalog_json = catalog_path.read_text()
 
-    # Build model metadata from manifest
-    models = {}
-    for node_id, node in manifest["nodes"].items():
-        if node["resource_type"] == "model" and node["package_name"] == "olist_churn":
-            models[node["unique_id"]] = {
-                "name": node["name"],
-                "description": node.get("description", ""),
-                "schema": node.get("schema", ""),
-                "materialized": node.get("config", {}).get("materialized", ""),
-                "depends_on": [
-                    d.split(".")[-1]
-                    for d in node.get("depends_on", {}).get("nodes", [])
-                ],
-                "columns": {
-                    col_name: col_info.get("description", "")
-                    for col_name, col_info in node.get("columns", {}).items()
-                },
-                "tags": node.get("tags", []),
-            }
-
-    # Enrich with catalog info (data types, row counts)
-    for node_id, cat_node in catalog.get("nodes", {}).items():
-        if node_id in models:
-            cat_columns = cat_node.get("columns", {})
-            for col_name, col_info in cat_columns.items():
-                col_lower = col_name.lower()
-                if col_lower not in models[node_id]["columns"]:
-                    models[node_id]["columns"][col_lower] = ""
-                # Store type info
-                models[node_id].setdefault("column_types", {})[col_lower] = col_info.get(
-                    "type", "unknown"
-                )
-            stats = cat_node.get("stats", {})
-            row_count = stats.get("row_count", {}).get("value")
-            if row_count:
-                models[node_id]["row_count"] = row_count
-
-    # Group by layer
-    layers = {"staging": [], "intermediate": [], "marts": []}
-    for node_id, meta in models.items():
-        schema = meta["schema"].lower()
-        if schema in layers:
-            layers[schema].append(meta)
-        else:
-            layers.setdefault("other", []).append(meta)
-
-    # Sort within each layer
-    for layer in layers.values():
-        layer.sort(key=lambda m: m["name"])
-
-    # --- Layer filter ---
-    selected_layer = st.selectbox(
-        "Filter by layer",
-        ["All"] + [k.title() for k in layers if layers[k]],
+    html = html.replace(
+        '"MANIFEST.JSON INLINE DATA"', manifest_json
+    ).replace(
+        '"CATALOG.JSON INLINE DATA"', catalog_json
     )
 
-    # --- Render documentation ---
-    for layer_name, layer_models in layers.items():
-        if not layer_models:
-            continue
-        if selected_layer != "All" and selected_layer.lower() != layer_name:
-            continue
-
-        st.header(f"{layer_name.title()} Layer")
-
-        for meta in layer_models:
-            with st.expander(
-                f"**{meta['name']}** — {meta['materialized']} | "
-                + (f"{meta.get('row_count', '?')} rows" if meta.get('row_count') else meta['materialized'])
-            ):
-                st.markdown(f"**Description:** {meta['description']}")
-
-                if meta["depends_on"]:
-                    st.markdown(
-                        f"**Depends on:** {', '.join(f'`{d}`' for d in meta['depends_on'])}"
-                    )
-
-                if meta["tags"]:
-                    st.markdown(f"**Tags:** {', '.join(meta['tags'])}")
-
-                # Column table
-                col_types = meta.get("column_types", {})
-                col_data = []
-                for col_name, col_desc in meta["columns"].items():
-                    col_data.append(
-                        {
-                            "Column": col_name,
-                            "Type": col_types.get(col_name, ""),
-                            "Description": col_desc,
-                        }
-                    )
-
-                if col_data:
-                    st.dataframe(
-                        pd.DataFrame(col_data),
-                        use_container_width=True,
-                        hide_index=True,
-                    )
-                else:
-                    st.info("No column documentation found.")
-
-    # --- Lineage summary ---
-    st.divider()
-    st.subheader("Pipeline Lineage")
-    st.code(
-        """
-SOURCES (Snowflake OLIST.RAW_DATA)
-  |
-  v
-STAGING (8 views - clean, rename, cast)
-  stg_olist__customers, stg_olist__orders, stg_olist__order_items,
-  stg_olist__order_payments, stg_olist__order_reviews, stg_olist__products,
-  stg_olist__sellers, stg_olist__geolocation
-  |
-  v
-INTERMEDIATE (5 views - business logic, features)
-  int_order_enriched -> int_customer_order_summary
-                            |
-                        int_customer_rfm
-                        int_customer_behavioral_features
-                        int_customer_churn_labels
-  |
-  v
-MARTS (4 tables - consumption-ready)
-  mrt_customer_360 (SQL) -> mrt_churn_prediction (Python/ML)
-                                |
-                            mrt_churn_segment_summary (SQL)
-  mrt_seller_performance (SQL)
-""",
-        language=None,
-    )
+    components.html(html, height=800, scrolling=True)
