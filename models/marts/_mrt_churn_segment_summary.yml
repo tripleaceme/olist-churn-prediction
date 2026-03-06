@@ -3,24 +3,81 @@ version: 2
 models:
   - name: mrt_churn_segment_summary
     description: "Aggregated churn metrics grouped by risk tier and state. Pre-computed for fast Streamlit dashboard queries."
+    meta:
+      label: "Churn Segments"
+      group_label: "Churn Analytics"
     columns:
       - name: churn_risk_tier
         description: "Churn risk bucket: Low, Medium, High, or Critical."
+        meta:
+          dimension:
+            type: string
+            label: "Risk Tier"
       - name: state
         description: "Customer state abbreviation."
+        meta:
+          dimension:
+            type: string
+            label: "State"
       - name: customer_count
         description: "Number of customers in this risk tier + state combination."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            total_customers:
+              type: sum
+              label: "Total Customers"
       - name: actual_churned_count
         description: "Number of customers who actually churned (churned=1) in this segment."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            total_churned:
+              type: sum
+              label: "Total Churned"
       - name: avg_churn_probability
         description: "Average model-predicted churn probability for this segment."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            weighted_avg_churn_prob:
+              type: average
+              label: "Avg Churn Probability"
+              round: 3
       - name: avg_lifetime_revenue
         description: "Average lifetime revenue per customer in BRL for this segment."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            overall_avg_revenue:
+              type: average
+              label: "Avg Revenue (BRL)"
+              round: 2
       - name: avg_total_orders
         description: "Average order count per customer for this segment."
+        meta:
+          dimension:
+            type: number
       - name: avg_review_score
         description: "Average review score for customers in this segment."
+        meta:
+          dimension:
+            type: number
       - name: avg_recency_days
         description: "Average days since last order for customers in this segment."
+        meta:
+          dimension:
+            type: number
       - name: total_revenue_at_risk
         description: "Sum of lifetime revenue for all customers in this segment. Represents total BRL at risk of churn."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            total_revenue_at_risk_sum:
+              type: sum
+              label: "Revenue at Risk (BRL)"

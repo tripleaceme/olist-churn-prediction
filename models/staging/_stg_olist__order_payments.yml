@@ -3,21 +3,50 @@ version: 2
 models:
   - name: stg_olist__order_payments
     description: "Payment records per order. An order may have multiple payment methods (e.g., credit card + voucher)."
+    meta:
+      label: "Staging Order Payments"
+      group_label: "Staging"
     columns:
       - name: order_id
         description: "Foreign key to stg_olist__orders."
+        meta:
+          dimension:
+            type: string
         tests:
           - not_null
       - name: payment_sequential
         description: "Sequential payment number within the order (1 = primary payment method)."
+        meta:
+          dimension:
+            type: number
       - name: payment_type
         description: "Payment method used. One of: credit_card, boleto, voucher, debit_card, not_defined."
+        meta:
+          dimension:
+            type: string
         tests:
           - accepted_values:
               values: ['credit_card', 'boleto', 'voucher', 'debit_card', 'not_defined']
       - name: payment_installments
         description: "Number of installments chosen by the customer (common in Brazilian e-commerce)."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            average_installments:
+              type: average
+              label: "Average Installments"
       - name: payment_value
         description: "Transaction value for this payment record in BRL."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            total_payment_value:
+              type: sum
+              label: "Total Payment Value"
+            average_payment_value:
+              type: average
+              label: "Average Payment Value"
         tests:
           - not_null

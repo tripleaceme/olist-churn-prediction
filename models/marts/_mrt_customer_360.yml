@@ -3,65 +3,218 @@ version: 2
 models:
   - name: mrt_customer_360
     description: "Wide feature table per customer combining order summary, RFM, behavioral features, and churn label. This is the ML-ready input table."
+    meta:
+      label: "Customer 360"
+      group_label: "Churn Analytics"
     columns:
       - name: customer_unique_id
         description: "True unique customer identifier. Primary key."
         tests:
           - unique
           - not_null
+        meta:
+          dimension:
+            type: string
+            label: "Customer ID"
       - name: state
         description: "Customer state abbreviation (e.g., SP, RJ, MG)."
+        meta:
+          dimension:
+            type: string
+            label: "State"
       - name: total_orders
         description: "Total number of delivered orders placed by this customer."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            total_orders_sum:
+              type: sum
+            avg_orders:
+              type: average
+              round: 1
       - name: lifetime_revenue
         description: "Total payment value across all orders in BRL."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            total_revenue:
+              type: sum
+              label: "Total Revenue (BRL)"
+            avg_revenue:
+              type: average
+              label: "Avg Revenue per Customer"
+              round: 2
       - name: avg_order_value
         description: "Average payment value per order in BRL."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            overall_avg_order_value:
+              type: average
+              label: "Avg Order Value"
+              round: 2
       - name: total_items_purchased
         description: "Total number of line items purchased across all orders."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            total_items:
+              type: sum
       - name: avg_delivery_days
         description: "Average number of days from purchase to delivery."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            overall_avg_delivery_days:
+              type: average
+              round: 1
       - name: avg_delivery_delta_days
         description: "Average delivery delta (actual vs estimated). Negative = typically late."
+        meta:
+          dimension:
+            type: number
       - name: avg_review_score
         description: "Average review score across all orders (1-5 scale)."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            overall_avg_review:
+              type: average
+              round: 2
       - name: worst_review_score
         description: "Lowest review score the customer ever gave."
+        meta:
+          dimension:
+            type: number
       - name: avg_installments
         description: "Average maximum installment count across orders."
+        meta:
+          dimension:
+            type: number
       - name: late_delivery_count
         description: "Number of orders delivered after the estimated date."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            total_late_deliveries:
+              type: sum
+              label: "Total Late Deliveries"
       - name: customer_tenure_days
         description: "Number of days between first and last order. 0 for single-order customers."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            avg_tenure:
+              type: average
+              label: "Avg Tenure (Days)"
+              round: 0
       - name: recency_days
         description: "Days since last order relative to dataset end date."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            avg_recency:
+              type: average
+              round: 0
       - name: frequency
         description: "Total delivered order count (RFM frequency)."
+        meta:
+          dimension:
+            type: number
       - name: monetary
         description: "Total lifetime revenue in BRL (RFM monetary)."
+        meta:
+          dimension:
+            type: number
       - name: recency_score
         description: "Recency quintile (1-5). 5 = most recent."
+        meta:
+          dimension:
+            type: number
       - name: frequency_score
         description: "Frequency quintile (1-5). 5 = most frequent."
+        meta:
+          dimension:
+            type: number
       - name: monetary_score
         description: "Monetary quintile (1-5). 5 = highest spend."
+        meta:
+          dimension:
+            type: number
       - name: rfm_combined_score
         description: "Sum of recency + frequency + monetary scores (3-15)."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            avg_rfm:
+              type: average
+              round: 1
       - name: unique_categories_purchased
         description: "Number of distinct product categories bought."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            avg_categories:
+              type: average
+              round: 1
       - name: unique_products_purchased
         description: "Number of distinct products bought."
+        meta:
+          dimension:
+            type: number
       - name: unique_payment_methods
         description: "Number of distinct payment types used."
+        meta:
+          dimension:
+            type: number
       - name: credit_card_usage_ratio
         description: "Proportion of payments made by credit card (0.0-1.0)."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            avg_credit_card_ratio:
+              type: average
+              round: 3
       - name: boleto_usage_ratio
         description: "Proportion of payments made by boleto (0.0-1.0)."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            avg_boleto_ratio:
+              type: average
+              round: 3
       - name: days_since_last_order
         description: "Days between last order and dataset end date."
+        meta:
+          dimension:
+            type: number
       - name: churned
         description: "Binary churn label. 1 = single-order customer (churned), 0 = repeat buyer (retained)."
         tests:
           - not_null
           - accepted_values:
               values: [0, 1]
+        meta:
+          dimension:
+            type: number
+          metrics:
+            churned_count:
+              type: sum
+              label: "Churned Customers"
+            churn_rate:
+              type: average
+              label: "Churn Rate"
+              round: 3

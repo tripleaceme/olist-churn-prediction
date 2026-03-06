@@ -3,25 +3,59 @@ version: 2
 models:
   - name: stg_olist__products
     description: "Product catalog with English category names and physical dimensions. One row per product."
+    meta:
+      label: "Staging Products"
+      group_label: "Staging"
     columns:
       - name: product_id
         description: "Unique product identifier."
+        meta:
+          dimension:
+            type: string
         tests:
           - unique
           - not_null
       - name: product_category
         description: "Product category translated to English (e.g., 'health_beauty', 'computers_accessories'). Falls back to Portuguese if no translation exists."
+        meta:
+          dimension:
+            type: string
       - name: product_name_length
         description: "Character count of the product name."
+        meta:
+          dimension:
+            type: number
       - name: product_description_length
         description: "Character count of the product description."
+        meta:
+          dimension:
+            type: number
       - name: product_photos_count
         description: "Number of product photos in the listing."
+        meta:
+          dimension:
+            type: number
       - name: product_weight_grams
         description: "Product weight in grams."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            average_weight_grams:
+              type: average
+              label: "Average Weight (g)"
       - name: product_length_cm
         description: "Product length in centimeters."
+        meta:
+          dimension:
+            type: number
       - name: product_height_cm
         description: "Product height in centimeters."
+        meta:
+          dimension:
+            type: number
       - name: product_width_cm
         description: "Product width in centimeters."
+        meta:
+          dimension:
+            type: number

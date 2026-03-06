@@ -3,32 +3,93 @@ version: 2
 models:
   - name: int_customer_rfm
     description: "Recency, Frequency, Monetary (RFM) features and quintile scores per customer. Classic customer segmentation framework."
+    meta:
+      label: "Customer RFM"
+      group_label: "Intermediate"
     columns:
       - name: customer_unique_id
         description: "True unique customer identifier."
+        meta:
+          dimension:
+            type: string
         tests:
           - unique
           - not_null
       - name: recency_days
         description: "Number of days between the customer's last order and the dataset end date. Lower = more recent."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            avg_recency_days:
+              type: average
+              label: "Avg Recency Days"
       - name: frequency
         description: "Total number of delivered orders (same as total_orders)."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            sum_frequency:
+              type: sum
+              label: "Total Orders (Frequency)"
+            avg_frequency:
+              type: average
+              label: "Avg Frequency"
       - name: monetary
         description: "Total lifetime revenue in BRL (same as lifetime_revenue)."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            sum_monetary:
+              type: sum
+              label: "Total Monetary (BRL)"
+            avg_monetary:
+              type: average
+              label: "Avg Monetary (BRL)"
       - name: recency_score
         description: "Recency quintile (1-5). 5 = most recent, 1 = least recent."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            avg_recency_score:
+              type: average
+              label: "Avg Recency Score"
         tests:
           - accepted_values:
               values: [1, 2, 3, 4, 5]
       - name: frequency_score
         description: "Frequency quintile (1-5). 5 = most frequent, 1 = least frequent."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            avg_frequency_score:
+              type: average
+              label: "Avg Frequency Score"
         tests:
           - accepted_values:
               values: [1, 2, 3, 4, 5]
       - name: monetary_score
         description: "Monetary quintile (1-5). 5 = highest spend, 1 = lowest spend."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            avg_monetary_score:
+              type: average
+              label: "Avg Monetary Score"
         tests:
           - accepted_values:
               values: [1, 2, 3, 4, 5]
       - name: rfm_combined_score
         description: "Sum of recency + frequency + monetary scores (3-15). Higher = more valuable customer."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            avg_rfm_combined_score:
+              type: average
+              label: "Avg RFM Combined Score"

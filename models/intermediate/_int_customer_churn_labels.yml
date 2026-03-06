@@ -6,24 +6,63 @@ models:
       Binary churn labels for marketplace data. A customer is 'churned' (1) if they placed only
       one order and never returned. A customer is 'retained' (0) if they placed 2+ orders.
       Only customers with a 90-day observation window after their last order are included.
+    meta:
+      label: "Customer Churn Labels"
+      group_label: "Intermediate"
     columns:
       - name: customer_unique_id
         description: "True unique customer identifier."
+        meta:
+          dimension:
+            type: string
         tests:
           - unique
           - not_null
       - name: total_orders
         description: "Total number of delivered orders placed by this customer."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            sum_total_orders:
+              type: sum
+              label: "Total Orders"
       - name: last_order_at
         description: "Timestamp of the customer's most recent order."
+        meta:
+          dimension:
+            type: timestamp
       - name: max_order_date
         description: "Latest order date in the entire dataset (used as the observation boundary)."
+        meta:
+          dimension:
+            type: timestamp
       - name: days_since_last_order
         description: "Number of days between the customer's last order and the dataset end date."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            avg_days_since_last_order:
+              type: average
+              label: "Avg Days Since Last Order"
       - name: has_sufficient_window
         description: "Whether the customer has at least 90 days of observation after their last order. Always true in this model (filtered)."
+        meta:
+          dimension:
+            type: boolean
       - name: churned
         description: "Binary churn label. 1 = single-order customer (churned), 0 = repeat buyer (retained)."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            total_churned:
+              type: sum
+              label: "Total Churned Customers"
+            churn_rate:
+              type: average
+              label: "Churn Rate"
         tests:
           - accepted_values:
               values: [0, 1]

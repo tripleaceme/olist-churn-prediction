@@ -1,0 +1,32 @@
+services:
+  lightdash:
+    image: lightdash/lightdash:latest
+    depends_on:
+      - lightdash-db
+    environment:
+      - PGHOST=lightdash-db
+      - PGPORT=5432
+      - PGUSER=lightdash
+      - PGPASSWORD=lightdash
+      - PGDATABASE=lightdash
+      - SECURE_COOKIES=false
+      - TRUST_PROXY=false
+      - LIGHTDASH_SECRET=notasecret_changeme
+      - PORT=8080
+      - LIGHTDASH_LOG_LEVEL=info
+    volumes:
+      - .:/usr/app/dbt
+    ports:
+      - "8081:8080"
+
+  lightdash-db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=lightdash
+      - POSTGRES_PASSWORD=lightdash
+      - POSTGRES_DB=lightdash
+    volumes:
+      - lightdash-pgdata:/var/lib/postgresql/data
+
+volumes:
+  lightdash-pgdata:

@@ -3,49 +3,149 @@ version: 2
 models:
   - name: int_order_enriched
     description: "Delivered orders joined with aggregated items, payments, and reviews into a single enriched record. One row per delivered order."
+    meta:
+      label: "Order Enriched"
+      group_label: "Intermediate"
     columns:
       - name: order_id
         description: "Unique order identifier."
+        meta:
+          dimension:
+            type: string
         tests:
           - unique
           - not_null
       - name: customer_id
         description: "Order-level customer identifier. Foreign key to stg_olist__customers."
+        meta:
+          dimension:
+            type: string
         tests:
           - not_null
       - name: purchased_at
         description: "Timestamp when the customer placed the order."
+        meta:
+          dimension:
+            type: timestamp
       - name: approved_at
         description: "Timestamp when the payment was approved."
+        meta:
+          dimension:
+            type: timestamp
       - name: shipped_at
         description: "Timestamp when the order was handed to the logistics carrier."
+        meta:
+          dimension:
+            type: timestamp
       - name: delivered_at
         description: "Timestamp when the order was delivered to the customer."
+        meta:
+          dimension:
+            type: timestamp
       - name: estimated_delivery_at
         description: "Estimated delivery date shown to the customer at purchase time."
+        meta:
+          dimension:
+            type: timestamp
       - name: delivery_days
         description: "Number of days between purchase and actual delivery."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            avg_delivery_days:
+              type: average
+              label: "Avg Delivery Days"
       - name: estimated_delivery_days
         description: "Number of days between purchase and estimated delivery date."
+        meta:
+          dimension:
+            type: number
       - name: delivery_delta_days
         description: "Difference between actual and estimated delivery in days. Negative = late delivery, positive = early."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            avg_delivery_delta_days:
+              type: average
+              label: "Avg Delivery Delta Days"
       - name: item_count
         description: "Total number of line items in this order."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            total_item_count:
+              type: sum
+              label: "Total Items"
+            avg_item_count:
+              type: average
+              label: "Avg Items per Order"
       - name: unique_products
         description: "Number of distinct products in this order."
+        meta:
+          dimension:
+            type: number
       - name: unique_sellers
         description: "Number of distinct sellers fulfilling this order."
+        meta:
+          dimension:
+            type: number
       - name: total_price
         description: "Sum of all item prices in BRL (excluding freight)."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            sum_total_price:
+              type: sum
+              label: "Total Price (BRL)"
+            avg_total_price:
+              type: average
+              label: "Avg Order Price (BRL)"
       - name: total_freight
         description: "Sum of all freight charges in BRL."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            sum_total_freight:
+              type: sum
+              label: "Total Freight (BRL)"
       - name: payment_type_count
         description: "Number of distinct payment methods used for this order."
+        meta:
+          dimension:
+            type: number
       - name: max_installments
         description: "Maximum number of installments chosen across payment methods."
+        meta:
+          dimension:
+            type: number
       - name: total_payment
         description: "Total payment value in BRL (price + freight + fees)."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            sum_total_payment:
+              type: sum
+              label: "Total Payment (BRL)"
+            avg_total_payment:
+              type: average
+              label: "Avg Payment per Order (BRL)"
       - name: avg_review_score
         description: "Average review score for this order (1-5 scale)."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            overall_avg_review_score:
+              type: average
+              label: "Avg Review Score"
       - name: min_review_score
         description: "Lowest review score given for this order."
+        meta:
+          dimension:
+            type: number

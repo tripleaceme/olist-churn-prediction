@@ -3,39 +3,121 @@ version: 2
 models:
   - name: int_customer_order_summary
     description: "Per-customer aggregation of their complete delivered order history. One row per customer_unique_id."
+    meta:
+      label: "Customer Order Summary"
+      group_label: "Intermediate"
     columns:
       - name: customer_unique_id
         description: "True unique customer identifier across all orders."
+        meta:
+          dimension:
+            type: string
         tests:
           - unique
           - not_null
       - name: city
         description: "Customer city (first observed)."
+        meta:
+          dimension:
+            type: string
       - name: state
         description: "Customer state abbreviation."
+        meta:
+          dimension:
+            type: string
       - name: total_orders
         description: "Total number of delivered orders placed by this customer."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            sum_total_orders:
+              type: sum
+              label: "Total Orders"
+            avg_total_orders:
+              type: average
+              label: "Avg Orders per Customer"
         tests:
           - not_null
       - name: first_order_at
         description: "Timestamp of the customer's earliest order."
+        meta:
+          dimension:
+            type: timestamp
       - name: last_order_at
         description: "Timestamp of the customer's most recent order."
+        meta:
+          dimension:
+            type: timestamp
       - name: lifetime_revenue
         description: "Total payment value across all orders in BRL."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            sum_lifetime_revenue:
+              type: sum
+              label: "Total Lifetime Revenue (BRL)"
+            avg_lifetime_revenue:
+              type: average
+              label: "Avg Lifetime Revenue (BRL)"
       - name: avg_order_value
         description: "Average payment value per order in BRL."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            overall_avg_order_value:
+              type: average
+              label: "Avg Order Value (BRL)"
       - name: total_items_purchased
         description: "Total number of line items purchased across all orders."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            sum_total_items_purchased:
+              type: sum
+              label: "Total Items Purchased"
       - name: avg_delivery_days
         description: "Average number of days from purchase to delivery across all orders."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            overall_avg_delivery_days:
+              type: average
+              label: "Avg Delivery Days"
       - name: avg_delivery_delta_days
         description: "Average delivery delta (actual vs estimated). Negative = typically late."
+        meta:
+          dimension:
+            type: number
       - name: avg_review_score
         description: "Average review score across all orders (1-5 scale)."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            overall_avg_review_score:
+              type: average
+              label: "Avg Review Score"
       - name: worst_review_score
         description: "Lowest review score the customer ever gave."
+        meta:
+          dimension:
+            type: number
       - name: avg_installments
         description: "Average maximum installment count across orders."
+        meta:
+          dimension:
+            type: number
       - name: late_delivery_count
         description: "Number of orders that were delivered after the estimated date."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            sum_late_deliveries:
+              type: sum
+              label: "Total Late Deliveries"

@@ -3,29 +3,114 @@ version: 2
 models:
   - name: mrt_seller_performance
     description: "Seller quality metrics including delivery speed, review scores, and late delivery rates. One row per seller."
+    meta:
+      label: "Seller Performance"
+      group_label: "Seller Analytics"
     columns:
       - name: seller_id
         description: "Unique seller identifier. Primary key."
         tests:
           - unique
           - not_null
+        meta:
+          dimension:
+            type: string
+            label: "Seller ID"
       - name: seller_city
         description: "City where the seller is located."
+        meta:
+          dimension:
+            type: string
+            label: "City"
       - name: seller_state
         description: "State abbreviation where the seller is located."
+        meta:
+          dimension:
+            type: string
+            label: "State"
       - name: total_orders_fulfilled
         description: "Number of distinct delivered orders this seller contributed to."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            total_orders:
+              type: sum
+              label: "Total Orders Fulfilled"
+            avg_orders_per_seller:
+              type: average
+              label: "Avg Orders per Seller"
+              round: 0
       - name: unique_products_sold
         description: "Number of distinct products this seller has sold."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            avg_product_catalog_size:
+              type: average
+              label: "Avg Catalog Size"
+              round: 0
       - name: total_revenue
         description: "Total item revenue in BRL (excluding freight)."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            total_seller_revenue:
+              type: sum
+              label: "Total Revenue (BRL)"
+            avg_seller_revenue:
+              type: average
+              label: "Avg Revenue per Seller"
+              round: 2
       - name: avg_item_price
         description: "Average price per item sold in BRL."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            overall_avg_price:
+              type: average
+              label: "Avg Item Price"
+              round: 2
       - name: avg_freight_value
         description: "Average freight charge per item in BRL."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            overall_avg_freight:
+              type: average
+              label: "Avg Freight"
+              round: 2
       - name: avg_review_score
         description: "Average customer review score for orders involving this seller (1-5)."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            overall_avg_review:
+              type: average
+              label: "Avg Review Score"
+              round: 2
       - name: avg_delivery_days
         description: "Average number of days from purchase to delivery for this seller's orders."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            overall_avg_delivery_days:
+              type: average
+              label: "Avg Delivery Days"
+              round: 1
       - name: late_delivery_rate
         description: "Proportion of orders delivered after the estimated date (0.0 to 1.0)."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            overall_late_rate:
+              type: average
+              label: "Avg Late Delivery Rate"
+              round: 3

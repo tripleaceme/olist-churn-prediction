@@ -3,15 +3,30 @@ version: 2
 models:
   - name: stg_olist__sellers
     description: "Seller profiles with location. One row per seller."
+    meta:
+      label: "Staging Sellers"
+      group_label: "Staging"
     columns:
       - name: seller_id
         description: "Unique seller identifier."
+        meta:
+          dimension:
+            type: string
         tests:
           - unique
           - not_null
       - name: zip_code
         description: "Seller zip code prefix (first 5 digits of Brazilian CEP)."
+        meta:
+          dimension:
+            type: string
       - name: city
         description: "Seller city name."
+        meta:
+          dimension:
+            type: string
       - name: state
         description: "Seller state abbreviation (e.g., SP, RJ, MG)."
+        meta:
+          dimension:
+            type: string

@@ -3,24 +3,62 @@ version: 2
 models:
   - name: stg_olist__order_items
     description: "Order line items with product, seller, price, and freight. One row per item in an order."
+    meta:
+      label: "Staging Order Items"
+      group_label: "Staging"
     columns:
       - name: order_id
         description: "Foreign key to stg_olist__orders."
+        meta:
+          dimension:
+            type: string
         tests:
           - not_null
       - name: order_item_id
         description: "Sequential item number within the order (1, 2, 3, ...)."
+        meta:
+          dimension:
+            type: number
       - name: product_id
         description: "Foreign key to stg_olist__products."
+        meta:
+          dimension:
+            type: string
         tests:
           - not_null
       - name: seller_id
         description: "Foreign key to stg_olist__sellers. The seller who fulfilled this item."
+        meta:
+          dimension:
+            type: string
       - name: shipping_limit_at
         description: "Deadline for the seller to hand the item to the carrier."
+        meta:
+          dimension:
+            type: timestamp
       - name: price
         description: "Item price in BRL (Brazilian Real)."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            total_price:
+              type: sum
+              label: "Total Price"
+            average_price:
+              type: average
+              label: "Average Price"
         tests:
           - not_null
       - name: freight_value
         description: "Shipping cost for this item in BRL."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            total_freight_value:
+              type: sum
+              label: "Total Freight Value"
+            average_freight_value:
+              type: average
+              label: "Average Freight Value"

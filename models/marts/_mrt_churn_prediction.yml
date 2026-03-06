@@ -3,35 +3,125 @@ version: 2
 models:
   - name: mrt_churn_prediction
     description: "ML-scored churn predictions with probability and risk tiers. Trained using GradientBoosting on mrt_customer_360. Retrained on each dbt run."
+    meta:
+      label: "Churn Predictions"
+      group_label: "Churn Analytics"
     columns:
       - name: customer_unique_id
         description: "True unique customer identifier. Primary key."
         tests:
           - unique
           - not_null
+        meta:
+          dimension:
+            type: string
+            label: "Customer ID"
       - name: state
         description: "Customer state abbreviation."
+        meta:
+          dimension:
+            type: string
+            label: "State"
       - name: total_orders
         description: "Total number of delivered orders."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            total_orders_sum:
+              type: sum
+              label: "Total Orders"
+            avg_orders_per_customer:
+              type: average
+              label: "Avg Orders per Customer"
       - name: lifetime_revenue
         description: "Total payment value across all orders in BRL."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            total_lifetime_revenue:
+              type: sum
+              label: "Total Revenue (BRL)"
+              format: "brl"
+            avg_lifetime_revenue:
+              type: average
+              label: "Avg Revenue per Customer"
       - name: avg_review_score
         description: "Average review score across all orders (1-5)."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            overall_avg_review:
+              type: average
+              label: "Avg Review Score"
+              round: 2
       - name: recency_days
         description: "Days since last order relative to dataset end date."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            avg_recency:
+              type: average
+              label: "Avg Recency (Days)"
+              round: 0
       - name: rfm_combined_score
         description: "Combined RFM score (3-15). Higher = more valuable customer."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            avg_rfm_score:
+              type: average
+              label: "Avg RFM Score"
+              round: 1
       - name: churn_probability
         description: "Model-predicted probability of churn (0.0 to 1.0). Output of GradientBoosting predict_proba."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            avg_churn_probability:
+              type: average
+              label: "Avg Churn Probability"
+              round: 3
       - name: churn_prediction
         description: "Binary prediction. 1 = predicted to churn, 0 = predicted to be retained."
         tests:
           - accepted_values:
               values: [0, 1]
+        meta:
+          dimension:
+            type: number
+          metrics:
+            predicted_churned_count:
+              type: sum
+              label: "Predicted Churned"
+            churn_rate:
+              type: average
+              label: "Churn Rate"
+              round: 3
       - name: churn_risk_tier
         description: "Risk tier based on churn_probability. Low (0-0.3), Medium (0.3-0.6), High (0.6-0.8), Critical (0.8-1.0)."
         tests:
           - accepted_values:
               values: ['Low', 'Medium', 'High', 'Critical']
+        meta:
+          dimension:
+            type: string
+            label: "Risk Tier"
       - name: churned
         description: "Actual churn label from training data. 1 = single-order (churned), 0 = repeat buyer (retained)."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            actual_churned_count:
+              type: sum
+              label: "Actual Churned"
+            actual_churn_rate:
+              type: average
+              label: "Actual Churn Rate"
+              round: 3

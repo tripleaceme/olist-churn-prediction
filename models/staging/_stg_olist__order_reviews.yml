@@ -3,26 +3,57 @@ version: 2
 models:
   - name: stg_olist__order_reviews
     description: "Customer review scores and optional comments. One or more reviews per order."
+    meta:
+      label: "Staging Order Reviews"
+      group_label: "Staging"
     columns:
       - name: review_id
         description: "Unique review identifier."
+        meta:
+          dimension:
+            type: string
         tests:
           - not_null
       - name: order_id
         description: "Foreign key to stg_olist__orders."
+        meta:
+          dimension:
+            type: string
         tests:
           - not_null
       - name: review_score
         description: "Customer satisfaction score from 1 (worst) to 5 (best)."
+        meta:
+          dimension:
+            type: number
+          metrics:
+            average_review_score:
+              type: average
+              label: "Average Review Score"
+            count_reviews:
+              type: count
+              label: "Total Reviews"
         tests:
           - not_null
           - accepted_values:
               values: [1, 2, 3, 4, 5]
       - name: review_comment_title
         description: "Optional short title the customer gave to their review."
+        meta:
+          dimension:
+            type: string
       - name: review_comment_message
         description: "Optional free-text review comment from the customer."
+        meta:
+          dimension:
+            type: string
       - name: review_created_at
         description: "Timestamp when the review survey was sent to the customer."
+        meta:
+          dimension:
+            type: timestamp
       - name: review_answered_at
         description: "Timestamp when the customer submitted the review."
+        meta:
+          dimension:
+            type: timestamp
